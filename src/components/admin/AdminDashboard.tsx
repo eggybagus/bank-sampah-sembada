@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -9,8 +10,8 @@ import {
   Package,
   ArrowRight,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
+import ErrorState from "../../components/common/ErrorState";
 import { useMembers } from "../../hooks/useMembers";
 import { useAllWithdrawals } from "../../hooks/useWithdrawal";
 import { useQuery } from "@tanstack/react-query";
@@ -89,11 +90,13 @@ function StatCard({
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
+  usePageTitle("Dashboard");
+
   const { data: members, isLoading: membersLoading } = useMembers();
   const { data: withdrawals, isLoading: withdrawalsLoading } = useAllWithdrawals();
 
   // Fetch recent deposits
-  const { data: recentDeposits, isLoading: depositsLoading } = useQuery({
+  const { data: recentDeposits, isLoading: depositsLoading, error: depositsError, refetch: refetchDeposits } = useQuery({
     queryKey: ["recent-deposits"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -217,6 +220,8 @@ export default function AdminDashboard() {
 
           {depositsLoading ? (
             <TableSkeleton />
+          ) : depositsError ? (
+            <ErrorState message="Gagal memuat deposit terbaru." onRetry={refetchDeposits} />
           ) : (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
               <div className="overflow-x-auto">

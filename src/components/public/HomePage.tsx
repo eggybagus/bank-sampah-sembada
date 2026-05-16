@@ -5,12 +5,13 @@ import {
   Newspaper,
   ArrowRight,
   Loader2,
-  AlertCircle,
   Package,
   FileText,
   Lightbulb,
   Info,
 } from "lucide-react";
+import ErrorState from "../common/ErrorState";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { usePrices } from "../../hooks/usePrices";
 import { useNews } from "../../hooks/useNews";
 import { formatRupiah } from "../../utils/formatters";
@@ -176,10 +177,7 @@ function PricesSection() {
         {isLoading ? (
           <PricesSkeleton />
         ) : error ? (
-          <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-            <AlertCircle size={18} />
-            Gagal memuat harga. Silakan coba lagi nanti.
-          </div>
+          <ErrorState message="Gagal memuat harga. Silakan coba lagi nanti." />
         ) : !groupedPrices || groupedPrices.length === 0 ? (
           <div className="text-center py-12 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
             <Package size={32} className="text-slate-300 mx-auto mb-3" />
@@ -287,10 +285,7 @@ function LatestNewsSection() {
         {isLoading ? (
           <NewsSkeleton />
         ) : error ? (
-          <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-            <AlertCircle size={18} />
-            Gagal memuat berita. Silakan coba lagi nanti.
-          </div>
+          <ErrorState message="Gagal memuat berita. Silakan coba lagi nanti." />
         ) : !news || news.length === 0 ? (
           <div className="text-center py-12 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
             <Newspaper size={32} className="text-slate-300 mx-auto mb-3" />
@@ -338,6 +333,8 @@ function LatestNewsSection() {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  usePageTitle("Beranda");
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <HeroSection />

@@ -23,6 +23,7 @@ import DepositList from "./components/member/DepositHistory/DepositList";
 import NotificationCenter from "./components/member/NotificationCenter";
 import WithdrawalStepper from "./components/member/WithdrawalFlow/WithdrawalStepper";
 import MemberWithdrawalList from "./components/member/WithdrawalHistory/WithdrawalList";
+import MemberAccountSettings from "./components/member/AccountSettings";
 
 import AdminDashboard from "./components/admin/AdminDashboard";
 import DepositForm from "./components/admin/DepositForm";
@@ -115,7 +116,7 @@ export default function App() {
 									<Route path="withdrawals" element={<AdminWithdrawalList />} />
 									<Route path="news" element={<NewsList />} />
 									<Route path="reports" element={<MonthlyReport />} />
-									<Route path="settings" element={<AccountSettings />} />
+									<Route path="settings" element={<MemberAccountSettings />} />
 								</Route>
 							</Route>
 
@@ -128,7 +129,7 @@ export default function App() {
 									<Route path="withdrawal" element={<WithdrawalStepper />} />
 									<Route path="withdrawals" element={<MemberWithdrawalList />} />
 									<Route path="notifications" element={<NotificationCenter />} />
-									<Route path="settings" element={<Placeholder title="Pengaturan" />} />
+									<Route path="settings" element={<AccountSettings />} />
 								</Route>
 							</Route>
 

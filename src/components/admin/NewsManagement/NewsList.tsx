@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Newspaper,
   Search,
@@ -11,6 +11,8 @@ import {
   ChevronRight,
   FileText,
 } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
+import ErrorState from "../../../components/common/ErrorState";
 import { useNews, useDeleteNews } from "../../../hooks/useNews";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -21,10 +23,10 @@ import NewsForm from "./NewsForm";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setDebounced(value), delay);
     return () => clearTimeout(timer);
-  });
+  }, [value, delay]);
   return debounced;
 }
 
@@ -132,7 +134,9 @@ function DeleteModal({
 const PAGE_SIZE = 10;
 
 export default function NewsList() {
-  const { data: newsList, isLoading } = useNews();
+  usePageTitle("Kelola Berita");
+
+  const { data: newsList, isLoading, error, refetch } = useNews();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [formNews, setFormNews] = useState<News | null>(null);
@@ -222,6 +226,8 @@ export default function NewsList() {
       {/* Table */}
       {isLoading ? (
         <TableSkeleton />
+      ) : error ? (
+        <ErrorState message="Gagal memuat data berita." onRetry={refetch} />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
           <div className="overflow-x-auto">

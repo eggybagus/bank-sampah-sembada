@@ -2,13 +2,14 @@ import { useState, useMemo } from "react";
 import {
   History,
   Loader2,
-  AlertCircle,
   ChevronLeft,
   ChevronRight,
   Filter,
   Package,
   ArrowUpDown,
 } from "lucide-react";
+import ErrorState from "../../common/ErrorState";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import { useDeposits } from "../../../hooks/useDeposits";
 import { useAuth } from "../../../hooks/useAuth";
 import { formatRupiah } from "../../../utils/formatters";
@@ -136,6 +137,8 @@ function FilterBar({
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function DepositList() {
+  usePageTitle("Riwayat Deposit");
+
   const { user } = useAuth();
   const memberId = user?.id ?? "";
 
@@ -262,10 +265,7 @@ export default function DepositList() {
       {isLoading ? (
         <TableSkeleton />
       ) : error ? (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-          <AlertCircle size={16} />
-          Gagal memuat data deposit.
-        </div>
+        <ErrorState message="Gagal memuat data deposit." />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
           <div className="overflow-x-auto">

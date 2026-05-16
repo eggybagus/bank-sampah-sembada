@@ -7,10 +7,11 @@ import {
   ToggleRight,
   X,
   Loader2,
-  AlertCircle,
   Search,
   History,
 } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
+import ErrorState from "../../../components/common/ErrorState";
 import { useAllTrashTypes, useActivePrices, useUpdatePrice, useUpdateTrashType, useCreateTrashType } from "../../../hooks/usePrices";
 import { useAuth } from "../../../hooks/useAuth";
 import { formatRupiah } from "../../../utils/formatters";
@@ -275,7 +276,9 @@ function EditPriceButton({
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function PriceList() {
-  const { data: trashTypes, isLoading, error } = useAllTrashTypes();
+  usePageTitle("Kelola Harga");
+
+  const { data: trashTypes, isLoading, error, refetch } = useAllTrashTypes();
   const updateTrashType = useUpdateTrashType();
   const [search, setSearch] = useState("");
   const [historyType, setHistoryType] = useState<TrashType | null>(null);
@@ -366,10 +369,7 @@ export default function PriceList() {
       {isLoading ? (
         <TableSkeleton />
       ) : error ? (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-          <AlertCircle size={16} />
-          Gagal memuat data.
-        </div>
+        <ErrorState message="Gagal memuat data." onRetry={refetch} />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
           <div className="overflow-x-auto">

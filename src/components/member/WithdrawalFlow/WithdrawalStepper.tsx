@@ -9,6 +9,7 @@ import {
   Send,
   ChevronRight,
 } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import Step1_SelectDeposits from "./Step1_SelectDeposits";
 import Step2_SelectMethod from "./Step2_SelectMethod";
 import Step3_Review from "./Step3_Review";
@@ -90,6 +91,8 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 // ─── Main container ──────────────────────────────────────────────────────────
 
 export default function WithdrawalStepper() {
+  usePageTitle("Ajukan Penarikan");
+
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   const methods = useForm<WithdrawalFormData>({

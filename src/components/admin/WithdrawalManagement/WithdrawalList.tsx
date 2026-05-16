@@ -1,5 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Banknote, Search, X, Clock, CheckCircle2, Ban, Eye, RefreshCw } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
+import ErrorState from "../../../components/common/ErrorState";
 import { useAllWithdrawalRequests } from "../../../hooks/useWithdrawal";
 import { supabase } from "../../../lib/supabase";
 import { formatRupiah } from "../../../utils/formatters";
@@ -76,7 +78,9 @@ const TABS: { key: Tab; label: string }[] = [
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function WithdrawalList() {
-	const { data: withdrawals, isLoading, refetch, dataUpdatedAt } = useAllWithdrawalRequests();
+	usePageTitle("Kelola Penarikan");
+
+	const { data: withdrawals, isLoading, error, refetch, dataUpdatedAt } = useAllWithdrawalRequests();
 	const [search, setSearch] = useState("");
 	const [activeTab, setActiveTab] = useState<Tab>("all");
 	const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -196,6 +200,8 @@ export default function WithdrawalList() {
 			{/* Table */}
 			{isLoading ? (
 				<TableSkeleton />
+			) : error ? (
+				<ErrorState message="Gagal memuat data penarikan." onRetry={refetch} />
 			) : (
 				<div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
 					<div className="overflow-x-auto">

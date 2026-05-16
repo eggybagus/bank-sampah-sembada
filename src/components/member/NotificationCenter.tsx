@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Loader2,
-  AlertCircle,
   CheckCheck,
   ArrowLeft,
   CircleDollarSign,
@@ -10,6 +9,8 @@ import {
   Wallet,
   TrendingUp,
 } from "lucide-react";
+import ErrorState from "../common/ErrorState";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useAuth } from "../../hooks/useAuth";
 import {
   useNotifications,
@@ -127,6 +128,8 @@ function NotificationItem({
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function NotificationCenter() {
+  usePageTitle("Notifikasi");
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const userId = user?.id ?? "";
@@ -202,10 +205,7 @@ export default function NotificationCenter() {
       {isLoading ? (
         <ListSkeleton />
       ) : error ? (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-          <AlertCircle size={16} />
-          Gagal memuat notifikasi.
-        </div>
+        <ErrorState message="Gagal memuat notifikasi." />
       ) : !notifications || notifications.length === 0 ? (
         <div className="text-center py-16 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
           <Bell size={32} className="text-slate-300 mx-auto mb-3" />

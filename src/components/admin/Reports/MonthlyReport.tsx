@@ -11,6 +11,7 @@ import {
   ArrowDownToLine,
   FileSpreadsheet,
 } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import { supabase } from "../../../lib/supabase";
 import { exportMonthlyReport } from "../../../utils/excelExporter";
 import { formatRupiah } from "../../../utils/formatters";
@@ -85,6 +86,8 @@ function StatCard({
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function MonthlyReport() {
+  usePageTitle("Laporan Bulanan");
+
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());

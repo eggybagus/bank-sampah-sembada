@@ -4,7 +4,6 @@ import {
   Newspaper,
   ArrowRight,
   Loader2,
-  AlertCircle,
   ChevronLeft,
   ChevronRight,
   Info,
@@ -12,6 +11,8 @@ import {
   Lightbulb,
   Filter,
 } from "lucide-react";
+import ErrorState from "../common/ErrorState";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNews } from "../../hooks/useNews";
 import { formatDate } from "../../utils/formatters";
 import type { News } from "../../types";
@@ -69,6 +70,8 @@ function NewsSkeleton() {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function NewsListPage() {
+  usePageTitle("Berita");
+
   const { data: allNews, isLoading, error } = useNews();
   const [activeFilter, setActiveFilter] = useState<News["type"] | "all">("all");
   const [page, setPage] = useState(1);
@@ -134,10 +137,7 @@ export default function NewsListPage() {
         {isLoading ? (
           <NewsSkeleton />
         ) : error ? (
-          <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-            <AlertCircle size={18} />
-            Gagal memuat berita. Silakan coba lagi nanti.
-          </div>
+          <ErrorState message="Gagal memuat berita. Silakan coba lagi nanti." />
         ) : paginatedNews.length === 0 ? (
           <div className="text-center py-16 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
             <Newspaper size={40} className="text-slate-300 mx-auto mb-3" />

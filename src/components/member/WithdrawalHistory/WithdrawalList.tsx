@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   History,
   Loader2,
-  AlertCircle,
   ChevronLeft,
   ChevronRight,
   Filter,
@@ -16,6 +15,8 @@ import {
   XCircle,
   Package,
 } from "lucide-react";
+import ErrorState from "../../common/ErrorState";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import { useAuth } from "../../../hooks/useAuth";
 import { useMemberWithdrawals } from "../../../hooks/useWithdrawal";
 import { useDeposits } from "../../../hooks/useDeposits";
@@ -219,6 +220,8 @@ function DetailModal({
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function WithdrawalList() {
+  usePageTitle("Riwayat Penarikan");
+
   const { user } = useAuth();
   const memberId = user?.id ?? "";
 
@@ -304,10 +307,7 @@ export default function WithdrawalList() {
       {isLoading ? (
         <TableSkeleton />
       ) : error ? (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-medium">
-          <AlertCircle size={16} />
-          Gagal memuat data penarikan.
-        </div>
+        <ErrorState message="Gagal memuat data penarikan." />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
           <div className="overflow-x-auto">

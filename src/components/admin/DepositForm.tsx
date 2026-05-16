@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -309,6 +310,8 @@ function ReceiptCard({ deposit }: { deposit: { memberName: string; trashName: st
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function DepositForm() {
+  usePageTitle("Input Deposit");
+
   const { user, profile } = useAuth();
   const adminId = user?.id ?? "";
 

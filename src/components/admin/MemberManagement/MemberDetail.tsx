@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, User, Phone, Wallet, Package, Banknote, Loader2, Calendar, CheckCircle2, Ban } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import { useMemberById } from "../../../hooks/useMembers";
 import { useDeposits } from "../../../hooks/useDeposits";
 import { useMemberWithdrawals } from "../../../hooks/useWithdrawal";
@@ -37,6 +38,8 @@ type Tab = "deposits" | "withdrawals";
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function MemberDetail() {
+	usePageTitle("Detail Member");
+
 	const { id } = useParams<{ id: string }>();
 	const memberId = id ?? "";
 	const [activeTab, setActiveTab] = useState<Tab>("deposits");

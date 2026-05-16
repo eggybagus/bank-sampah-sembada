@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Phone, KeyRound, ArrowLeft, Loader2, Leaf } from "lucide-react";
 import { sendOtp, verifyOtp, devLogin } from "../services/auth.service";
@@ -87,6 +88,7 @@ function OtpInput({
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function LoginPage() {
+  usePageTitle("Masuk");
   const [step, setStep]         = useState<1 | 2>(1);
   const [storedPhone, setStoredPhone] = useState("");
   const [otpValue, setOtpValue] = useState("");

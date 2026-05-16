@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Users,
@@ -14,9 +14,10 @@ import {
   UserPlus,
   X,
   CheckCircle2,
-  AlertCircle,
   Ban,
 } from "lucide-react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
+import ErrorState from "../../../components/common/ErrorState";
 import { useMembers } from "../../../hooks/useMembers";
 import { useUpdateMemberStatus } from "../../../hooks/useMembers";
 import { formatRupiah } from "../../../utils/formatters";
@@ -26,10 +27,10 @@ import type { MemberWithBalance } from "../../../types";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setDebounced(value), delay);
     return () => clearTimeout(timer);
-  });
+  }, [value, delay]);
   return debounced;
 }
 
@@ -159,7 +160,9 @@ function ToggleStatusModal({
 const PAGE_SIZE = 10;
 
 export default function MemberList() {
-  const { data: members, isLoading } = useMembers();
+  usePageTitle("Kelola Member");
+
+  const { data: members, isLoading, error, refetch } = useMembers();
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
@@ -261,6 +264,8 @@ export default function MemberList() {
       {/* Table */}
       {isLoading ? (
         <TableSkeleton />
+      ) : error ? (
+        <ErrorState message="Gagal memuat data member." onRetry={refetch} />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] overflow-hidden">
           <div className="overflow-x-auto">

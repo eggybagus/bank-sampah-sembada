@@ -12,6 +12,7 @@ import {
   Phone,
   AlertCircle,
 } from "lucide-react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import toast from "react-hot-toast";
@@ -27,6 +28,8 @@ type NameFormData = z.infer<typeof nameSchema>;
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function AccountSettings() {
+  usePageTitle("Pengaturan Akun");
+
   const { user, profile, signOut } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
 

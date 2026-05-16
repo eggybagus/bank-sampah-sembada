@@ -1,7 +1,10 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { Link } from "react-router-dom";
 import { Leaf, ArrowLeft } from "lucide-react";
 
 export default function NotFoundPage() {
+  usePageTitle("Halaman Tidak Ditemukan");
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
       {/* Icon */}

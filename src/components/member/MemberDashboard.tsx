@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Package,
 } from "lucide-react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useAuth } from "../../hooks/useAuth";
 import { useDeposits, useDepositStats } from "../../hooks/useDeposits";
 import { useBalance } from "../../hooks/useBalance";
@@ -277,6 +278,8 @@ function NotificationPreview({
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function MemberDashboard() {
+  usePageTitle("Dashboard");
+
   const { user, profile } = useAuth();
   const memberId = user?.id ?? "";
   const memberName = profile?.full_name ?? "Anggota";

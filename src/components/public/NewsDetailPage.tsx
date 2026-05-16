@@ -2,13 +2,14 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Loader2,
-  AlertCircle,
   Newspaper,
   Info,
   Package,
   Lightbulb,
   Calendar,
 } from "lucide-react";
+import ErrorState from "../common/ErrorState";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNewsById } from "../../hooks/useNews";
 import { formatDate } from "../../utils/formatters";
 import type { News } from "../../types";
@@ -44,6 +45,8 @@ const newsTypeConfig: Record<
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function NewsDetailPage() {
+  usePageTitle("Detail Berita");
+
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: news, isLoading, error } = useNewsById(id ?? "");
@@ -65,19 +68,13 @@ export default function NewsDetailPage() {
   if (error || !news) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center border border-red-100">
-            <AlertCircle size={28} className="text-red-500" />
-          </div>
-          <h2 className="text-xl font-black text-slate-900">
-            Berita tidak ditemukan
-          </h2>
-          <p className="text-sm text-slate-500 font-medium max-w-sm">
-            Berita yang Anda cari mungkin telah dihapus atau URL tidak valid.
-          </p>
+        <ErrorState
+          message="Berita yang Anda cari mungkin telah dihapus atau URL tidak valid."
+        />
+        <div className="flex justify-center mt-6">
           <Link
             to="/news"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 transition-all mt-2"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 transition-all"
           >
             <ArrowLeft size={14} />
             Kembali ke Daftar Berita
