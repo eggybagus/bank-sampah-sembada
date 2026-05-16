@@ -30,6 +30,9 @@ import PriceList from "./components/admin/PriceManagement/PriceList";
 import MemberList from "./components/admin/MemberManagement/MemberList";
 import MemberDetail from "./components/admin/MemberManagement/MemberDetail";
 import AdminWithdrawalList from "./components/admin/WithdrawalManagement/WithdrawalList";
+import NewsList from "./components/admin/NewsManagement/NewsList";
+import MonthlyReport from "./components/admin/Reports/MonthlyReport";
+import AccountSettings from "./components/admin/AccountSettings";
 
 // ─── Query client ────────────────────────────────────────────────────────────
 
@@ -110,8 +113,9 @@ export default function App() {
 									<Route path="members/:id" element={<MemberDetail />} />
 									<Route path="deposit" element={<DepositForm />} />
 									<Route path="withdrawals" element={<AdminWithdrawalList />} />
-									<Route path="news" element={<Placeholder title="Kelola Berita" />} />
-									<Route path="reports" element={<Placeholder title="Laporan Bulanan" />} />
+									<Route path="news" element={<NewsList />} />
+									<Route path="reports" element={<MonthlyReport />} />
+									<Route path="settings" element={<AccountSettings />} />
 								</Route>
 							</Route>
 

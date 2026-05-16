@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { Leaf, LayoutDashboard, DollarSign, Users, PackagePlus, Banknote, Newspaper, FileBarChart, LogOut, Menu, X, UserCircle } from "lucide-react";
+import { Leaf, LayoutDashboard, DollarSign, Users, PackagePlus, Banknote, Newspaper, FileBarChart, LogOut, Menu, X, UserCircle, Settings } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
 	{ to: "/admin/withdrawals", label: "Kelola Penarikan", icon: <Banknote size={18} /> },
 	{ to: "/admin/news", label: "Kelola Berita", icon: <Newspaper size={18} /> },
 	{ to: "/admin/reports", label: "Laporan", icon: <FileBarChart size={18} /> },
+	{ to: "/admin/settings", label: "Pengaturan", icon: <Settings size={18} /> },
 ] as const;
 
 // ─── Nav item ─────────────────────────────────────────────────────────────────

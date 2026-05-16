@@ -55,6 +55,20 @@ export async function createNews(
   return data as News;
 }
 
+export async function updateNews(
+  id: string,
+  payload: Partial<Omit<News, "id" | "created_at" | "created_by">>
+): Promise<News> {
+  const { data, error } = await supabase
+    .from("news")
+    .update(payload)
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as News;
+}
+
 export async function deleteNews(id: string): Promise<void> {
   const { error } = await supabase.from("news").delete().eq("id", id);
   if (error) throw error;
