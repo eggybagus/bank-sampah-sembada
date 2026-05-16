@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase";
-import type { WithdrawalRequest } from "../types";
+import type { WithdrawalRequest, WithdrawalWithRelations } from "../types";
 
 export async function getWithdrawalsByMember(
   memberId: string
@@ -20,6 +20,29 @@ export async function getAllWithdrawals(): Promise<WithdrawalRequest[]> {
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data as WithdrawalRequest[];
+}
+
+export async function getAllWithdrawalRequests(): Promise<WithdrawalWithRelations[]> {
+  const { data, error } = await supabase
+    .from("withdrawal_requests")
+    .select(
+      "*, member:profiles!withdrawal_requests_member_id_fkey(id, full_name, phone_number), bank_account:bank_accounts(*)"
+    )
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data as WithdrawalWithRelations[];
+}
+
+export async function getWithdrawalById(id: string): Promise<WithdrawalWithRelations | null> {
+  const { data, error } = await supabase
+    .from("withdrawal_requests")
+    .select(
+      "*, member:profiles!withdrawal_requests_member_id_fkey(id, full_name, phone_number), bank_account:bank_accounts(*)"
+    )
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data as WithdrawalWithRelations | null;
 }
 
 export async function createWithdrawalRequest(

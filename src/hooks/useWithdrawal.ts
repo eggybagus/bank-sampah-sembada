@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getWithdrawalsByMember,
   getAllWithdrawals,
+  getAllWithdrawalRequests,
+  getWithdrawalById,
   getLastWithdrawalDate,
   createWithdrawalRequest,
   completeWithdrawal,
@@ -22,6 +24,21 @@ export function useAllWithdrawals() {
   return useQuery({
     queryKey: ["withdrawals", "all"],
     queryFn: getAllWithdrawals,
+  });
+}
+
+export function useAllWithdrawalRequests() {
+  return useQuery({
+    queryKey: ["withdrawals", "all-with-relations"],
+    queryFn: getAllWithdrawalRequests,
+  });
+}
+
+export function useWithdrawalById(id: string) {
+  return useQuery({
+    queryKey: ["withdrawals", id],
+    queryFn: () => getWithdrawalById(id),
+    enabled: !!id,
   });
 }
 
