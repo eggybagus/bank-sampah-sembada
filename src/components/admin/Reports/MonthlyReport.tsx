@@ -39,10 +39,13 @@ function getYearOptions() {
 
 function StatsSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="h-24 bg-slate-100 rounded-2xl animate-pulse" />
-      ))}
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-24 bg-slate-100 rounded-2xl animate-pulse" />
+        ))}
+      </div>
+      <div className="h-40 bg-slate-100 rounded-2xl animate-pulse" />
     </div>
   );
 }
@@ -157,18 +160,28 @@ export default function MonthlyReport() {
 
   const stats = useMemo(() => {
     const totalDepositCount = deposits.length;
-    const totalWeight = deposits.reduce((s, d) => s + (d.weight_kg ?? 0), 0);
     const totalDepositValue = deposits.reduce((s, d) => s + (d.total_rupiah ?? 0), 0);
     const completedWithdrawals = withdrawals.filter((w) => w.status === "completed");
     const totalWithdrawalValue = completedWithdrawals.reduce((s, w) => s + (w.total_amount ?? 0), 0);
     const totalMember = members.length;
 
+    const weightMap: Record<string, { name: string; category: string; weight: number }> = {};
+    for (const d of deposits) {
+      const t = d.trash_type;
+      if (!t) continue;
+      if (!weightMap[t.id]) weightMap[t.id] = { name: t.name, category: t.category, weight: 0 };
+      weightMap[t.id].weight += d.weight_kg ?? 0;
+    }
+    const weightByType = Object.values(weightMap).sort((a, b) => b.weight - a.weight);
+    const totalWeight = weightByType.reduce((s, x) => s + x.weight, 0);
+
     return {
       totalDepositCount,
-      totalWeight,
       totalDepositValue,
       totalWithdrawalValue,
       totalMember,
+      weightByType,
+      totalWeight,
     };
   }, [deposits, withdrawals, members]);
 
@@ -254,18 +267,14 @@ export default function MonthlyReport() {
           <h2 className="text-lg font-black text-slate-900">
             Ringkasan {format(monthStart, "MMMM yyyy", { locale: id })}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+
+          {/* 4-card summary row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
               title="Total Deposit"
               value={String(stats.totalDepositCount)}
               icon={<Package size={16} />}
               color="brand"
-            />
-            <StatCard
-              title="Total Berat"
-              value={`${stats.totalWeight.toLocaleString("id-ID")} kg`}
-              icon={<Scale size={16} />}
-              color="blue"
             />
             <StatCard
               title="Total Nilai Deposit"
@@ -285,6 +294,57 @@ export default function MonthlyReport() {
               icon={<Users size={16} />}
               color="purple"
             />
+          </div>
+
+          {/* Weight per trash type */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.04)] p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center border bg-blue-50 text-blue-600 border-blue-100">
+                  <Scale size={16} />
+                </div>
+                <p className="text-sm font-black text-slate-900">Berat per Jenis Sampah</p>
+              </div>
+              <span className="text-xs font-black text-slate-400">
+                Total: {stats.totalWeight.toLocaleString("id-ID")} kg
+              </span>
+            </div>
+
+            {stats.weightByType.length === 0 ? (
+              <p className="text-sm text-slate-400 font-medium text-center py-6">
+                Tidak ada data deposit bulan ini
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {stats.weightByType.map((item) => {
+                  const pct = stats.totalWeight > 0 ? (item.weight / stats.totalWeight) * 100 : 0;
+                  return (
+                    <div key={item.name}>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black text-slate-900">{item.name}</span>
+                          <span className="text-[10px] font-medium text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">
+                            {item.category}
+                          </span>
+                        </div>
+                        <span className="text-xs font-black text-slate-700">
+                          {item.weight.toLocaleString("id-ID")} kg
+                          <span className="text-slate-400 font-medium ml-1">
+                            ({pct.toFixed(1)}%)
+                          </span>
+                        </span>
+                      </div>
+                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
