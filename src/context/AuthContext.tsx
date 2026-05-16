@@ -17,7 +17,9 @@ interface AuthContextValue {
   profile: Profile | null;
   role: "admin" | "member" | null;
   loading: boolean;
+  needsProfileCompletion: boolean;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -32,9 +34,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // Keep the auth state callback synchronous to avoid missing events.
-  // Supabase fires INITIAL_SESSION immediately on subscribe, so this also
-  // handles the "on mount, fetch session" requirement without a separate
-  // getSession() call (which would cause a double profile fetch).
   useEffect(() => {
     const {
       data: { subscription },
@@ -53,8 +52,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // Fetch the profiles row whenever the authenticated user changes.
-  // Using a separate effect keeps the auth listener synchronous and gives us
-  // a clean cancellation path if the component unmounts mid-request.
   useEffect(() => {
     if (!user) return;
 
@@ -81,11 +78,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // onAuthStateChange fires SIGNED_OUT → setUser(null) → setProfile(null)
   }, []);
 
-  // Derived — avoids storing duplicate state that can fall out of sync.
+  const refreshProfile = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+    setProfile(data as Profile | null);
+  }, [user]);
+
+  // Derived states.
   const role = profile?.role ?? null;
 
+  // Profile completion check: if user is authenticated but has no full_name
+  // or phone_number, they need to complete their profile first.
+  // This happens after email signup before the user fills in their details.
+  const needsProfileCompletion =
+    user !== null &&
+    profile !== null &&
+    (profile.full_name === "" || profile.full_name === "Anggota" || profile.phone_number === "");
+
   return (
-    <AuthContext.Provider value={{ user, profile, role, loading, signOut }}>
+    <AuthContext.Provider
+      value={{ user, profile, role, loading, needsProfileCompletion, signOut, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

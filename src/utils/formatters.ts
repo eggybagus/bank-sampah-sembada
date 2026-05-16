@@ -78,11 +78,12 @@ export function maskAccountNumber(number: string): string {
 
 /**
  * Format phone for storage (ensure +62 prefix).
- * 081234567890 → "+6281234567890"
+ * 081234567890  → "+6281234567890"
+ * 6281234567890 → "+6281234567890"
+ * +6281234567890 → "+6281234567890"
  */
 export function formatPhoneStorage(phone: string): string {
-  if (phone.startsWith("0")) {
-    return "+62" + phone.slice(1);
-  }
+  if (phone.startsWith("0")) return "+62" + phone.slice(1);
+  if (phone.startsWith("628")) return "+" + phone;
   return phone;
 }

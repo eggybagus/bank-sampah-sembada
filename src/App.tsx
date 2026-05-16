@@ -24,6 +24,7 @@ import NotificationCenter from "./components/member/NotificationCenter";
 import WithdrawalStepper from "./components/member/WithdrawalFlow/WithdrawalStepper";
 import MemberWithdrawalList from "./components/member/WithdrawalHistory/WithdrawalList";
 import MemberAccountSettings from "./components/member/AccountSettings";
+import CompleteProfile from "./components/common/CompleteProfile";
 
 import AdminDashboard from "./components/admin/AdminDashboard";
 import DepositForm from "./components/admin/DepositForm";
@@ -61,8 +62,12 @@ const authLoadingScreen = (
 );
 
 function RedirectIfAuthenticated({ children }: { children: React.ReactNode }) {
-	const { isAuthenticated, profile, loading } = useAuth();
+	const { isAuthenticated, profile, loading, needsProfileCompletion, user } = useAuth();
 	if (loading) return authLoadingScreen;
+	// If user is logged in but needs to complete profile, redirect to complete-profile
+	if (user && needsProfileCompletion) {
+		return <Navigate to="/complete-profile" replace />;
+	}
 	if (isAuthenticated && profile) {
 		return <Navigate to={profile.role === "admin" ? "/admin" : "/member"} replace />;
 	}
@@ -103,6 +108,9 @@ export default function App() {
 									</RedirectIfAuthenticated>
 								}
 							/>
+
+							{/* ── Complete Profile (requires auth but no role yet) ── */}
+							<Route path="/complete-profile" element={<CompleteProfile />} />
 
 							{/* ── Admin zone ── */}
 							<Route path="/admin" element={<ProtectedRoute role="admin" />}>

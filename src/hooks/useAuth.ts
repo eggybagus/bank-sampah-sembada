@@ -10,8 +10,8 @@ export function useAuth() {
 
   return {
     ...auth,
-    isAuthenticated: auth.user !== null,
-    isAdmin: auth.role === "admin",
-    isMember: auth.role === "member",
+    isAuthenticated: auth.user !== null && !auth.needsProfileCompletion,
+    isAdmin: auth.role === "admin" && !auth.needsProfileCompletion,
+    isMember: auth.role === "member" && !auth.needsProfileCompletion,
   };
 }
