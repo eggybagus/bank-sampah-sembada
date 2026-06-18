@@ -28,6 +28,8 @@ export async function getCurrentPrices(): Promise<PricesByCategory[]> {
 
   const grouped = new Map<string, CurrentPriceItem[]>();
   for (const item of items) {
+    // Hide deactivated trash types from the public homepage.
+    if (!item.trash_type.is_accepted) continue;
     const cat = item.trash_type.category;
     if (!grouped.has(cat)) grouped.set(cat, []);
     grouped.get(cat)!.push(item);
