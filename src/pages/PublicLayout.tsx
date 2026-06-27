@@ -1,11 +1,15 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Leaf, LogIn, Menu, X } from "lucide-react";
+import { Leaf, LogIn, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export default function PublicLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
+
+  const { isAuthenticated, isAdmin } = useAuth();
+  const dashboardPath = isAdmin ? "/admin" : "/member";
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
@@ -42,13 +46,23 @@ export default function PublicLayout() {
             >
               Berita
             </Link>
-            <Link
-              to="/login"
-              className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 transition-all shadow-sm shadow-brand-200"
-            >
-              <LogIn size={15} />
-              Masuk
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to={dashboardPath}
+                className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 transition-all shadow-sm shadow-brand-200"
+              >
+                <LayoutDashboard size={15} />
+                Ke Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white font-bold rounded-xl text-sm hover:bg-brand-700 transition-all shadow-sm shadow-brand-200"
+              >
+                <LogIn size={15} />
+                Masuk
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -85,13 +99,23 @@ export default function PublicLayout() {
             >
               Berita
             </Link>
-            <Link
-              to="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-4 py-2.5 rounded-xl text-sm font-bold text-brand-600 hover:bg-brand-50 transition-colors"
-            >
-              Masuk
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to={dashboardPath}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2.5 rounded-xl text-sm font-bold text-brand-600 hover:bg-brand-50 transition-colors"
+              >
+                Ke Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-2.5 rounded-xl text-sm font-bold text-brand-600 hover:bg-brand-50 transition-colors"
+              >
+                Masuk
+              </Link>
+            )}
           </div>
         )}
       </header>
