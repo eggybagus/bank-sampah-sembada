@@ -31,11 +31,19 @@ A web application to digitize the operations of a local waste bank (bank sampah)
 
 ## Authentication
 
-- **Method**: Phone-based OTP via Supabase Phone Auth
-- No email/password. Members login using their Indonesian phone number (format: `08xx` or `+62xx`).
-- OTP is 6 digits, valid for 5 minutes.
-- Role (`admin` or `member`) is stored in the `profiles` table and determines which layout/routes are accessible.
-- Admin and member both use the same OTP login flow. Role is detected after session is established.
+- **Method**: Email + password via Supabase Auth (NOT phone-OTP — earlier design changed during build).
+- **Signup**: `supabase.auth.signUp({ email, password })` with `full_name`/`role` metadata. Phone number is collected separately afterward via `CompleteProfile.tsx`, not at signup.
+- **Login**: two tabs — by email (`signInWithEmail`) or by phone (`signInWithPhone`, which RPC-looks-up the email by phone via `get_email_by_phone`, then signs in with email+password). Both end at the same email/password auth.
+- Email verification is required after signup (the app shows a "Verifikasi Email" screen).
+- Role (`admin` or `member`) is stored in the `profiles` table and determines which layout/routes are accessible. Role is detected after session is established.
+
+### Duplicate-email handling (important Supabase gotcha)
+
+Supabase returns a **fake-success** from `signUp()` when the email is already registered (anti-enumeration). It does NOT throw and does NOT insert a new `auth.users` row — so the `handle_new_user` trigger never fires for this case, meaning **the database/trigger cannot detect it**. Detection must happen client-side: after `signUp()`, check `result.user && result.user.identities?.length === 0` → already registered. This is implemented in `onSignup` in `LoginPage.tsx`. (Alternatively, "Prevent email enumeration" can be disabled in Supabase Auth settings to make `signUp` throw a real error, at the cost of enumeration protection.)
+
+### profiles auto-creation (phone_number must be NULL, not '')
+
+A trigger (`handle_new_user`) creates the `profiles` row on new `auth.users` insert. Because email signup has no phone yet, the trigger must insert `phone_number = NULL` (via `NULLIF(... , '')`), NOT an empty string — `phone_number` is `UNIQUE`, and Postgres allows multiple NULLs but only one `''`. Inserting `''` caused every signup after the first to fail with `duplicate key value violates unique constraint "profiles_phone_number_key"`.
 
 ---
 
